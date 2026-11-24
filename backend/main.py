@@ -1,160 +1,115 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from google import genai
-from dotenv import load_dotenv
 import os
 import logging
-from typing import Literal
-import time
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-# Configure logging
+from backend.app.core.config import settings
+from backend.app.db.seed import init_db
+from backend.app.api.v1.auth import router as auth_router
+from backend.app.api.v1.chat import router as chat_router
+from backend.app.api.v1.timetable import router as timetable_router
+from backend.app.api.v1.courses import router as courses_router
+from backend.app.api.v1.exams import router as exams_router
+from backend.app.api.v1.faqs import router as faqs_router
+from backend.app.api.v1.documents import router as documents_router
+from backend.app.api.v1.notes import router as notes_router
+from backend.app.api.v1.admin import router as admin_router
+from backend.app.api.v1.health import router as health_router
+
+from backend.campus_knowledge import CAMPUS_DATA
+
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("campus_ai")
 
-load_dotenv()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Ensure database schema & seed data are initialized
+    if os.getenv("TESTING") != "1":
+        logger.info("Initializing Campus AI Assistant application...")
+        try:
+            init_db()
+        except Exception as e:
+            logger.error(f"Error during database startup initialization: {e}")
+    yield
+    logger.info("Campus AI Assistant shutting down...")
 
 app = FastAPI(
-    title="Campus Communication AI",
-    description="API for generating professional academic communications",
-    version="1.0.0"
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
+    description="Student-Centric Conversational Academic Navigator & Advisory System.",
+    lifespan=lifespan
 )
 
-# Configure CORS more securely
+# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for testing
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Load API key securely
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    logger.error("GEMINI_API_KEY not found in environment variables")
-    raise ValueError("GEMINI_API_KEY is required")
+# Mount API v1 Routers
+api_v1_prefix = settings.API_V1_STR
+app.include_router(health_router, prefix=api_v1_prefix)
+app.include_router(auth_router, prefix=api_v1_prefix)
+app.include_router(chat_router, prefix=api_v1_prefix)
+app.include_router(timetable_router, prefix=api_v1_prefix)
+app.include_router(courses_router, prefix=api_v1_prefix)
+app.include_router(exams_router, prefix=api_v1_prefix)
+app.include_router(faqs_router, prefix=api_v1_prefix)
+app.include_router(documents_router, prefix=api_v1_prefix)
+app.include_router(notes_router, prefix=api_v1_prefix)
+app.include_router(admin_router, prefix=api_v1_prefix)
 
-client = genai.Client(api_key=api_key)
+# Root-level backward-compatible aliases
+app.include_router(health_router)
+app.include_router(chat_router)
+app.include_router(documents_router)
 
-# Define valid options as enums
-class CommunicationType(str):
-    EMAIL = "Email"
-    LEAVE_LETTER = "Leave Letter"
-    PERMISSION_LETTER = "Permission Letter"
-    NOTICE = "Notice"
-    COMPLAINT_LETTER = "Complaint Letter"
-    EVENT_ANNOUNCEMENT = "Event Announcement"
-    WHATSAPP_MESSAGE = "WhatsApp Message"
+from backend.app.schemas.common import DocumentRequest, DocumentResponse
+from backend.app.api.v1.documents import generate_academic_document
+from backend.app.db.session import get_db
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
-class Tone(str):
-    FORMAL = "Formal"
-    PROFESSIONAL = "Professional"
-    FRIENDLY = "Friendly"
-    POLITE = "Polite"
+@app.post("/generate", response_model=DocumentResponse, tags=["Document Drafter Legacy Alias"])
+def generate_legacy(payload: DocumentRequest, db: Session = Depends(get_db)):
+    return generate_academic_document(payload=payload, db=db)
 
-class Length(str):
-    SHORT = "Short"
-    MEDIUM = "Medium"
-    DETAILED = "Detailed"
+@app.get("/api/campus-data", tags=["Campus Data"])
+async def get_campus_data():
+    """Returns verified campus structured dataset."""
+    return CAMPUS_DATA
 
-class RequestData(BaseModel):
-    type: str = Field(..., description="Type of communication")
-    message: str = Field(..., min_length=5, max_length=1000, description="Situation description")
-    tone: str = Field(..., description="Desired tone")
-    length: str = Field(..., description="Desired length")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "type": "Email",
-                "message": "I need permission to miss class tomorrow for a medical appointment",
-                "tone": "Professional",
-                "length": "Medium"
-            }
-        }
-
-@app.get("/")
-async def root():
+@app.get("/api/overview", tags=["Root"])
+@app.get("/api-info", tags=["Root"])
+async def root_overview():
     return {
-        "message": "Campus Communication AI API",
-        "version": "1.0.0",
+        "title": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "status": "online",
+        "api_v1_documentation": "/docs",
         "endpoints": {
-            "generate": "/generate (POST)"
+            "chat": f"{api_v1_prefix}/chat",
+            "timetable": f"{api_v1_prefix}/timetable",
+            "courses": f"{api_v1_prefix}/courses",
+            "exams": f"{api_v1_prefix}/exams",
+            "faqs": f"{api_v1_prefix}/faqs",
+            "documents": f"{api_v1_prefix}/documents/generate",
+            "auth": f"{api_v1_prefix}/auth/login"
         }
     }
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": time.time()}
+# Mount static frontend assets so http://localhost:8000 serves the full web app
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 
-@app.post("/generate")
-async def generate_text(data: RequestData):
-    """
-    Generate professional academic communication based on user input.
-    """
-    try:
-        logger.info(f"Generating {data.type} with {data.tone} tone")
-        
-        # Enhanced prompt with better structure
-        prompt = f"""
-You are an expert campus communication assistant specializing in academic and professional writing.
-
-Task: Generate a {data.type}
-
-Context:
-{data.message}
-
-Requirements:
-- Tone: {data.tone}
-- Length: {data.length}
-- Format: {get_format_instructions(data.type)}
-- Purpose: Clear, professional, and appropriate for academic setting
-
-Guidelines:
-1. Use appropriate salutations and closings
-2. Maintain consistent tone throughout
-3. Include all necessary details from the context
-4. Follow standard academic communication conventions
-5. Ensure clarity and professionalism
-
-Generate the communication:
-"""
-        
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        
-        if not response or not response.text:
-            raise HTTPException(status_code=500, detail="Failed to generate response")
-        
-        logger.info("Successfully generated communication")
-        return {
-            "output": response.text,
-            "type": data.type,
-            "tone": data.tone,
-            "length": data.length,
-            "status": "success"
-        }
-        
-    except Exception as e:
-        logger.error(f"Error generating communication: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
-
-def get_format_instructions(comm_type: str) -> str:
-    """Get specific format instructions for different communication types"""
-    formats = {
-        "Email": "Include subject line, proper salutation, body, and signature",
-        "Leave Letter": "Include date, recipient address, subject, reason, dates, and closing",
-        "Permission Letter": "Include date, recipient, subject, clear request, reason, and closing",
-        "Notice": "Include title, date, clear message, and issuing authority",
-        "Complaint Letter": "Include date, recipient, subject, clear description of issue, and desired resolution",
-        "Event Announcement": "Include event name, date, time, venue, and call to action",
-        "WhatsApp Message": "Brief, conversational format suitable for instant messaging"
-    }
-    return formats.get(comm_type, "Standard professional format")
+frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

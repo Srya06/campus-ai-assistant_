@@ -1,17 +1,44 @@
-step 1:
-in the first terminal please copy paste this code 
- Navigate to project folder 
+===================================================================
+  CAMPUS AI ASSISTANT - QUICK RUN INSTRUCTIONS
+===================================================================
 
- # Activate venv
- venv\Scripts\activate
+Option A (Recommended - Single Unified Server):
+-------------------------------------------------------------------
+Both Frontend and Backend run together on Port 8000!
 
- # Run backend with more detailed logging
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug
+1. Open PowerShell / Command Prompt:
+   cd campus-ai-assistant
+   .\venv\Scripts\activate
+   uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 
-step 2:
-In the second terminal please copy paste this code 
- # Navigate to frontend folder 
+2. Open in your browser:
+   👉 http://localhost:8000
 
- # Start frontend
- python -m http.server 3000
- 
+* Full Web Application: http://localhost:8000
+* Interactive Swagger API Docs: http://localhost:8000/docs
+
+
+Option B (Separate Frontend Server on Port 3001):
+-------------------------------------------------------------------
+If you prefer running frontend on a dedicated static server:
+
+Terminal 1 (Backend):
+   uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+
+Terminal 2 (Frontend):
+   python -m http.server 3001 --directory frontend
+
+Visit:
+   👉 http://localhost:3001
+
+
+DEMO LOGIN CREDENTIALS:
+-------------------------------------------------------------------
+* Admin Account:   Username: admin    | Password: admin123  (Unlocks Admin Management tab)
+* Student Account: Username: student  | Password: student123
+
+
+RUNNING AUTOMATED TEST SUITE:
+-------------------------------------------------------------------
+.\venv\Scripts\python.exe -m pytest backend/tests -v
+===================================================================

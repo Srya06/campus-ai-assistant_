@@ -3,88 +3,1277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Communication AI</title>
+    <title>Campus AI Assistant | Student-Centric Academic Navigator & Advisory System</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🎓 Campus Communication Assistant</h1>
-            <p class="subtitle">Generate professional academic communication instantly with AI</p>
-        </header>
-
-        <form id="communicationForm" onsubmit="handleSubmit(event)">
-            <div class="form-group">
-                <label for="type">📄 Communication Type</label>
-                <select id="type" required>
-                    <option value="" disabled selected>Select communication type</option>
-                    <option value="Email">📧 Email</option>
-                    <option value="Leave Letter">📝 Leave Letter</option>
-                    <option value="Permission Letter">✅ Permission Letter</option>
-                    <option value="Notice">📢 Notice</option>
-                    <option value="Complaint Letter">⚠️ Complaint Letter</option>
-                    <option value="Event Announcement">🎉 Event Announcement</option>
-                    <option value="WhatsApp Message">💬 WhatsApp Message</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="message">💭 Describe your situation</label>
-                <textarea 
-                    id="message" 
-                    placeholder="Example: I need permission to miss class tomorrow because I have a medical appointment"
-                    required
-                    minlength="5"
-                    maxlength="1000"
-                ></textarea>
-                <div class="character-count">
-                    <span id="charCount">0</span>/1000 characters
+<body class="theme-light">
+    <div class="app-container">
+        <!-- ============================================================== -->
+        <!-- LEFT SIDEBAR                                                   -->
+        <!-- ============================================================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo-circle">
+                    <span class="brand-icon">🎓</span>
+                </div>
+                <div class="brand-title-wrap">
+                    <h2 class="brand-title">Campus AI</h2>
+                    <span class="brand-subtitle">Assistant<span class="brand-sparkle">✦</span></span>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="form-group half">
-                    <label for="tone">🎨 Tone</label>
-                    <select id="tone" required>
-                        <option value="Formal">Formal</option>
-                        <option value="Professional" selected>Professional</option>
-                        <option value="Friendly">Friendly</option>
-                        <option value="Polite">Polite</option>
-                    </select>
-                </div>
+            <!-- Main Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-target="dashboard" onclick="switchMainTab('chat')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Dashboard</span>
+                </button>
+                <button class="nav-item" data-target="chat" onclick="switchMainTab('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">AI Assistant</span>
+                </button>
+                <button class="nav-item" data-target="timetables" onclick="switchMainTab('timetables')">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-label">Timetable</span>
+                </button>
+                <button class="nav-item" data-target="courses" onclick="switchMainTab('courses')">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Courses</span>
+                </button>
+                <button class="nav-item" data-target="notes" onclick="switchMainTab('notes')">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Notes & Materials</span>
+                </button>
+                <button class="nav-item" data-target="exams" onclick="switchMainTab('exams')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Exams & Rules</span>
+                </button>
+                <button class="nav-item" data-target="admin-desk" onclick="switchMainTab('admin')">
+                    <span class="nav-icon">🏛️</span>
+                    <span class="nav-label">Administration</span>
+                </button>
+                <button class="nav-item" data-target="helpdesk" onclick="switchMainTab('admin')">
+                    <span class="nav-icon">🎧</span>
+                    <span class="nav-label">Helpdesk</span>
+                </button>
+                <button class="nav-item" data-target="drafter" onclick="switchMainTab('drafter')">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-label">Documents</span>
+                </button>
+                <button class="nav-item admin-only-item" data-target="management" id="sidebarAdminBtn" style="display: none;" onclick="switchMainTab('management')">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Admin Portal</span>
+                </button>
+            </nav>
 
-                <div class="form-group half">
-                    <label for="length">📏 Length</label>
-                    <select id="length" required>
-                        <option value="Short">Short (Quick)</option>
-                        <option value="Medium" selected>Medium (Balanced)</option>
-                        <option value="Detailed">Detailed (Comprehensive)</option>
-                    </select>
+            <!-- Quick Access Section -->
+            <div class="sidebar-section">
+                <span class="section-title">Quick Access</span>
+                <div class="quick-links">
+                    <a href="javascript:void(0)" onclick="quickNotify('Opening Central Library Portal...')" class="quick-link">
+                        <span class="link-left"><span class="link-icon">☑️</span> Library Portal</span>
+                        <span class="ext-icon">↗</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="quickNotify('Connecting to Campus LMS & Moodle...')" class="quick-link">
+                        <span class="link-left"><span class="link-icon">💻</span> LMS / Moodle</span>
+                        <span class="ext-icon">↗</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="quickNotify('Redirecting to Student Webmail...')" class="quick-link">
+                        <span class="link-left"><span class="link-icon">✉️</span> Email (Institute)</span>
+                        <span class="ext-icon">↗</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="switchMainTab('admin'); askQuickPrompt('How do I apply for tuition fee installments?');" class="quick-link">
+                        <span class="link-left"><span class="link-icon">💳</span> Fee Payment</span>
+                        <span class="ext-icon">↗</span>
+                    </a>
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn">
-                <span class="btn-text">Generate Message</span>
-                <span class="loading-spinner" style="display: none;">⌛</span>
-            </button>
-        </form>
-
-        <div class="output-section" id="outputSection" style="display: none;">
-            <div class="output-header">
-                <h2>✨ Generated Communication</h2>
-                <div class="output-actions">
-                    <button class="icon-btn" onclick="copyToClipboard()" title="Copy to clipboard">📋</button>
-                    <button class="icon-btn" onclick="downloadOutput()" title="Download as text file">💾</button>
+            <!-- Sidebar Bottom: Theme Toggle & Graphic -->
+            <div class="sidebar-footer">
+                <div class="theme-toggle-row">
+                    <label class="theme-switch" title="Toggle Dark/Light Mode">
+                        <input type="checkbox" id="themeToggleCheckbox" onchange="toggleTheme()">
+                        <span class="slider">
+                            <span class="icon-sun">☀️</span>
+                            <span class="icon-moon">🌙</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="sidebar-campus-graphic">
+                    <img src="assets/sidebar-campus.png" alt="Campus Illustration" onerror="this.style.display='none'">
                 </div>
             </div>
-            <div class="output-container">
-                <pre id="output"></pre>
+        </aside>
+
+        <!-- ============================================================== -->
+        <!-- MAIN APPLICATION BODY                                          -->
+        <!-- ============================================================== -->
+        <div class="app-main">
+            <!-- Top Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="header-badge">
+                        <span class="header-badge-icon">🎓</span>
+                        <div>
+                            <h1 class="header-title">Campus AI Assistant</h1>
+                            <p class="header-tagline">Student-Centric Academic Navigator & Advisory System</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global Search Input with Shortcut -->
+                <div class="header-search">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input 
+                            type="text" 
+                            id="globalSearchInput" 
+                            placeholder='Ask or search anything... (e.g., "Next exam?", "CSE timetable")'
+                            onkeydown="handleGlobalSearch(event)"
+                        >
+                        <kbd class="search-kbd">Ctrl + K</kbd>
+                    </div>
+                </div>
+
+                <!-- Header Right: Notifications & User Profile -->
+                <div class="header-right">
+                    <button class="icon-button notification-btn" title="View Notifications" onclick="showNotifications()">
+                        <span class="btn-icon">🔔</span>
+                        <span class="notification-badge">2</span>
+                    </button>
+
+                    <!-- User Profile Pill -->
+                    <div class="user-profile-pill" id="userProfilePill" onclick="toggleProfileDropdown()">
+                        <div class="avatar-wrapper">
+                            <img src="assets/avatar.png" id="userAvatarImg" alt="User Avatar" class="user-avatar" onerror="this.src='assets/student-avatar.jpg'">
+                            <span class="online-indicator"></span>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name" id="userDisplayName">Surya D.</span>
+                            <span class="user-role" id="userDisplayRole">Student • CSE (AI)</span>
+                        </div>
+                        <span class="dropdown-arrow">▾</span>
+                    </div>
+
+                    <!-- Profile Dropdown Menu -->
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <strong id="dropdownFullName">Surya D.</strong>
+                            <small id="dropdownEmail">surya@campus.edu</small>
+                            <span class="dropdown-role-tag" id="dropdownRoleTag">Student</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item student-only-action" id="dropdownProfileBtn" onclick="openStudentProfileModal()">
+                            <span>👨‍🎓 My Student Profile & Resume</span>
+                        </button>
+                        <button class="dropdown-item" onclick="openAuthModal('signin')">
+                            <span>🔄 Switch Account</span>
+                        </button>
+                        <button class="dropdown-item" onclick="openAuthModal('signup')">
+                            <span>✨ Register New User</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item text-danger" onclick="handleLogout()">
+                            <span>🚪 Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content Row: Center Stage + Right Sidebar -->
+            <div class="dashboard-body">
+                <!-- ========================================================== -->
+                <!-- CENTER STAGE (Main Workspace)                              -->
+                <!-- ========================================================== -->
+                <main class="center-stage">
+                    <!-- Hero Welcome Banner -->
+                    <section class="hero-welcome-card" id="heroBanner">
+                        <div class="hero-content">
+                            <h2 class="hero-heading">Welcome back, <span id="heroStudentName">Surya</span>! <span class="wave-emoji">👋</span></h2>
+                            <p class="hero-subtext">Your AI academic companion is here to help you plan, learn, and stay on track.</p>
+                        </div>
+                        <div class="hero-artwork">
+                            <img src="assets/campus-banner.png" alt="University Campus Clock Tower" class="hero-campus-image" onerror="this.src='assets/welcome-card-bg.png'">
+                        </div>
+                    </section>
+
+                    <!-- 4 Metric Cards Row -->
+                    <section class="metrics-grid">
+                        <div class="metric-card" onclick="switchMainTab('timetables')">
+                            <div class="metric-icon-wrap bg-blue-subtle">
+                                <span class="metric-icon">📅</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Today's Classes</span>
+                                <strong class="metric-value" id="metricClassesCount">4</strong>
+                            </div>
+                            <span class="metric-arrow">›</span>
+                        </div>
+
+                        <div class="metric-card" onclick="quickNotify('Tasks: Lab Report submission, Math Problem Set 4, Seminar prep.')">
+                            <div class="metric-icon-wrap bg-green-subtle">
+                                <span class="metric-icon">📋</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Pending Tasks</span>
+                                <strong class="metric-value">3</strong>
+                            </div>
+                            <span class="metric-arrow">›</span>
+                        </div>
+
+                        <div class="metric-card" onclick="switchMainTab('exams')">
+                            <div class="metric-icon-wrap bg-purple-subtle">
+                                <span class="metric-icon">📄</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Upcoming Exams</span>
+                                <strong class="metric-value" id="metricExamsCount">2</strong>
+                            </div>
+                            <span class="metric-arrow">›</span>
+                        </div>
+
+                        <div class="metric-card" onclick="openStudentProfileModal()">
+                            <div class="metric-icon-wrap bg-amber-subtle">
+                                <span class="metric-icon">🏆</span>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">CGPA</span>
+                                <strong class="metric-value" id="metricCgpaVal">8.0</strong>
+                            </div>
+                            <span class="metric-arrow">›</span>
+                        </div>
+                    </section>
+
+                    <!-- Sub-Navigation Pills Bar -->
+                    <nav class="subnav-pills" id="subnavPills">
+                        <button class="subnav-pill active" data-tab="chat" onclick="switchMainTab('chat')">
+                            <span class="pill-icon">💬</span>
+                            <span>AI Conversational Chat</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="timetables" onclick="switchMainTab('timetables')">
+                            <span class="pill-icon">📅</span>
+                            <span>Academic Timetables</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="courses" onclick="switchMainTab('courses')">
+                            <span class="pill-icon">📚</span>
+                            <span>Courses & Prerequisites</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="notes" onclick="switchMainTab('notes')">
+                            <span class="pill-icon">📖</span>
+                            <span>Study Notes & Materials (PDF)</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="exams" onclick="switchMainTab('exams')">
+                            <span class="pill-icon">📢</span>
+                            <span>Exam Notices & Rules</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="admin" onclick="switchMainTab('admin')">
+                            <span class="pill-icon">🏛️</span>
+                            <span>Administrative Helpdesk</span>
+                        </button>
+                        <button class="subnav-pill" data-tab="drafter" onclick="switchMainTab('drafter')">
+                            <span class="pill-icon">✍️</span>
+                            <span>Academic Letter Drafter</span>
+                        </button>
+                        <button class="subnav-pill admin-tab" data-tab="management" id="adminSubnavBtn" style="display: none;" onclick="switchMainTab('management')">
+                            <span class="pill-icon">⚙️</span>
+                            <span>Admin Management</span>
+                        </button>
+                    </nav>
+
+                    <!-- Tab View Container -->
+                    <div class="tab-views">
+                        <!-- ================================================== -->
+                        <!-- TAB 1: CONVERSATIONAL CHAT                          -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane active" id="pane-chat">
+                            <div class="chat-card">
+                                <div class="chat-card-header">
+                                    <div class="bot-header-info">
+                                        <div class="bot-avatar-badge">🤖</div>
+                                        <div>
+                                            <h3 class="bot-name">Campus Intelligent Assistant</h3>
+                                            <p class="bot-desc">Answers timetables, course prerequisites, exam notices, and student administrative queries.</p>
+                                        </div>
+                                    </div>
+                                    <button class="secondary-btn clear-chat-btn" onclick="clearChat()">
+                                        <span>🧹</span> Clear Chat
+                                    </button>
+                                </div>
+
+                                <!-- Quick Suggestion Chips Carousel -->
+                                <div class="quick-suggestions-row">
+                                    <span class="suggestions-label">Quick Suggestions:</span>
+                                    <div class="chips-carousel">
+                                        <button class="suggestion-chip" onclick="askQuickPrompt('Show me the CSE 4th semester timetable for today')">
+                                            📅 Today's Timetable
+                                        </button>
+                                        <button class="suggestion-chip" onclick="askQuickPrompt('What are the strict prerequisites for Machine Learning (CS601)?')">
+                                            🟢 ML Prerequisites
+                                        </button>
+                                        <button class="suggestion-chip" onclick="askQuickPrompt('When are Mid-Sem exams and what are the calculator rules?')">
+                                            📝 Mid-Sem Dates
+                                        </button>
+                                        <button class="suggestion-chip" onclick="askQuickPrompt('How do I apply for MCM or NSP scholarships and fee installments?')">
+                                            💰 Scholarship Info
+                                        </button>
+                                        <button class="suggestion-chip" onclick="askQuickPrompt('Draft a medical leave letter to my HOD for 2 days leave')">
+                                            ✍️ Leave Application
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Chat Stream -->
+                                <div class="chat-messages-container" id="chatMessages">
+                                    <div class="chat-bubble bot-bubble">
+                                        <div class="bubble-avatar">🤖</div>
+                                        <div class="bubble-body">
+                                            <p class="greeting-text"><strong>Hello! I am your Campus AI Assistant.</strong></p>
+                                            <p>I am designed to help you navigate campus life effortlessly:</p>
+                                            <ul class="assistant-features-list">
+                                                <li>📅 <strong>Academic Timetables & Curriculum</strong> (Credits, course chains, syllabus)</li>
+                                                <li>📚 <strong>Course Prerequisites & Graphs</strong> (Credits, course chains, syllabus)</li>
+                                                <li>📢 <strong>Exam Notices & Circulars</strong> (Midterm/final schedules, hall tickets, rules)</li>
+                                                <li>🏛️ <strong>Administrative Queries</strong> (Scholarships, fee deadlines, library, hostel, bonafide)</li>
+                                                <li>✍️ <strong>Academic Drafting</strong> (Formal leave letters, permission requests, emails)</li>
+                                            </ul>
+                                            <p class="closing-tip">Feel free to type any question below or click one of the quick suggestions above!</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chat Input Area -->
+                                <form class="chat-input-container" id="chatForm" onsubmit="handleChatSubmit(event)">
+                                    <div class="chat-input-bar">
+                                        <button type="button" class="input-action-btn" title="Attach Document / Syllabus" onclick="quickNotify('Attachment feature: Drop syllabus PDF here to analyze')">
+                                            📎
+                                        </button>
+                                        <input 
+                                            type="text" 
+                                            id="chatInput" 
+                                            placeholder="Ask anything about your academics..." 
+                                            autocomplete="off" 
+                                            required
+                                        >
+                                        <button type="button" class="input-action-btn" title="Voice Input" onclick="toggleVoiceInput()">
+                                            🎙️
+                                        </button>
+                                        <button type="submit" id="chatSendBtn" class="send-message-btn" title="Send Message">
+                                            <span class="send-icon">➤</span>
+                                            <span class="send-spinner" style="display: none;">⏳</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Bottom Action Chips -->
+                                    <div class="bottom-action-chips">
+                                        <button type="button" class="action-chip" onclick="askQuickPrompt('Perform a deep campus search on attendance condonation policies and criteria')">
+                                            🔍 Deep Search
+                                        </button>
+                                        <button type="button" class="action-chip" onclick="askQuickPrompt('Summarize the upcoming Mid-Semester Examination Circular and calculator policy')">
+                                            📄 Summarize
+                                        </button>
+                                        <button type="button" class="action-chip" onclick="switchMainTab('drafter')">
+                                            ✍️ Draft Letter
+                                        </button>
+                                        <button type="button" class="action-chip" onclick="askQuickPrompt('Analyze the syllabus for CS401 Design and Analysis of Algorithms')">
+                                            📑 Analyze Syllabus
+                                        </button>
+                                        <button type="button" class="action-chip" onclick="askQuickPrompt('Generate a checklist for semester exam preparation and hall ticket prerequisites')">
+                                            📋 Generate Checklist
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 2: TIMETABLES                                  -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-timetables">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">📅 Academic Timetable Navigator</h2>
+                                        <p class="module-subtitle">Explore class schedules, lab allocations, faculty, and lecture hall locations.</p>
+                                    </div>
+                                    <button class="primary-btn-sm" onclick="exportTimetablePDF()">📥 Export Schedule</button>
+                                </div>
+
+                                <div class="filter-controls-row">
+                                    <div class="filter-group">
+                                        <label for="deptSelect">Department</label>
+                                        <select id="deptSelect" onchange="fetchTimetables()">
+                                            <option value="CSE" selected>Computer Science & Engineering (CSE)</option>
+                                            <option value="ECE">Electronics & Communication (ECE)</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label for="semSelect">Semester</label>
+                                        <select id="semSelect" onchange="fetchTimetables()">
+                                            <option value="Sem 4" selected>Semester 4 (2nd Year)</option>
+                                            <option value="Sem 6">Semester 6 (3rd Year)</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label for="daySelect">Day of Week</label>
+                                        <select id="daySelect" onchange="fetchTimetables()">
+                                            <option value="ALL">Full Weekly Schedule</option>
+                                            <option value="Monday">Monday</option>
+                                            <option value="Tuesday" selected>Tuesday (Today)</option>
+                                            <option value="Wednesday">Wednesday</option>
+                                            <option value="Thursday">Thursday</option>
+                                            <option value="Friday">Friday</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="timetable-display" id="timetableResults">
+                                    <div class="loading-state">Loading timetable schedule...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 3: COURSES & PREREQUISITES                     -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-courses">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">📚 Course Catalog & Prerequisite Graph</h2>
+                                        <p class="module-subtitle">Inspect degree syllabus, course credits, and interactive dependency trees.</p>
+                                    </div>
+                                </div>
+
+                                <div class="filter-controls-row">
+                                    <div class="search-box-wrap">
+                                        <input type="text" id="courseSearchInput" placeholder="Search by course code or title (e.g. CS401, Algorithms, Database)..." oninput="filterCourses()">
+                                    </div>
+                                    <div class="filter-group">
+                                        <select id="courseSemFilter" onchange="filterCourses()">
+                                            <option value="ALL">All Semesters</option>
+                                            <option value="1">Semester 1</option>
+                                            <option value="3">Semester 3</option>
+                                            <option value="4" selected>Semester 4</option>
+                                            <option value="6">Semester 6</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="courses-grid" id="courseGrid">
+                                    <div class="loading-state">Loading course catalog...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB: STUDY NOTES & MATERIALS (PDF DOWNLOADS)       -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-notes">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">📖 Course Lecture Notes & Study Materials</h2>
+                                        <p class="module-subtitle">Official verified departmental syllabus modules, theoretical outlines, and direct PDF downloads.</p>
+                                    </div>
+                                    <button class="secondary-btn-sm" onclick="loadCourseNotes()">🔄 Refresh Notes</button>
+                                </div>
+
+                                <div class="filter-controls-row">
+                                    <div class="search-box-wrap">
+                                        <input type="text" id="noteSearchInput" placeholder="Search by topic, unit, formula, or course code (e.g. Dynamic Programming, Semaphores, CS401)..." oninput="filterNotes()">
+                                    </div>
+                                    <div class="filter-group">
+                                        <select id="noteCourseFilter" onchange="filterNotes()">
+                                            <option value="ALL">All Courses</option>
+                                            <option value="CS401">CS401 — Algorithms</option>
+                                            <option value="CS402">CS402 — Operating Systems</option>
+                                            <option value="CS404">CS404 — DBMS</option>
+                                            <option value="CS601">CS601 — Machine Learning</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <select id="noteSemFilter" onchange="filterNotes()">
+                                            <option value="ALL">All Semesters</option>
+                                            <option value="4" selected>Semester 4</option>
+                                            <option value="6">Semester 6</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="notes-grid" id="notesGrid">
+                                    <div class="loading-state">Loading verified study notes & lecture PDFs...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 4: EXAM NOTICES                                -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-exams">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">📢 Examination Hub & Regulations</h2>
+                                        <p class="module-subtitle">Verified circulars, midterm dates, calculator regulations, and hall ticket mandates.</p>
+                                    </div>
+                                    <button class="secondary-btn-sm" onclick="loadExams()">🔄 Refresh Notices</button>
+                                </div>
+
+                                <div class="exams-list" id="examsList">
+                                    <div class="loading-state">Loading examination notices...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 5: ADMINISTRATIVE HELPDESK                     -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-admin">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">🏛️ Administrative Helpdesk & FAQs</h2>
+                                        <p class="module-subtitle">Official verified procedures for tuition fees, scholarships, library access, and hostels.</p>
+                                    </div>
+                                </div>
+
+                                <div class="filter-controls-row">
+                                    <div class="search-box-wrap">
+                                        <input type="text" id="faqSearchInput" placeholder="Search FAQs (e.g. fee installments, MCM scholarship, library fine, hostel in-time)..." oninput="filterFaqs()">
+                                    </div>
+                                    <div class="filter-group">
+                                        <select id="faqCategoryFilter" onchange="filterFaqs()">
+                                            <option value="ALL">All FAQ Categories</option>
+                                            <option value="Fees & Installments">Fees & Installments</option>
+                                            <option value="Scholarships">Scholarships</option>
+                                            <option value="Library">Library</option>
+                                            <option value="Hostel">Hostel</option>
+                                            <option value="Bonafide">Bonafide & Transcripts</option>
+                                            <option value="Attendance">Attendance</option>
+                                            <option value="Grievance">Anti-Ragging / Counseling</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="faqs-list" id="faqsList">
+                                    <div class="loading-state">Loading campus FAQs...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 6: ACADEMIC LETTER DRAFTER                     -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-drafter">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">✍️ Formal Academic Document & Email Drafter</h2>
+                                        <p class="module-subtitle">Instantly draft letters and correspondence with privacy-preserving bracketed placeholders.</p>
+                                    </div>
+                                </div>
+
+                                <div class="drafter-layout">
+                                    <form class="drafter-form" id="drafterForm" onsubmit="handleDraftSubmit(event)">
+                                        <div class="form-group">
+                                            <label for="docType">Document Type</label>
+                                            <select id="docType" required>
+                                                <option value="Medical Leave Letter">Medical Leave Letter</option>
+                                                <option value="On-Duty (OD) Permission">On-Duty (OD) Permission (Hackathon/Conference)</option>
+                                                <option value="Faculty Recommendation Request">Faculty Recommendation / LOR Request Email</option>
+                                                <option value="HOD Permission Application">HOD Permission Application</option>
+                                                <option value="Hostel Leave Pass Request">Hostel Leave Pass Request</option>
+                                                <option value="Bonafide Certificate Request">Bonafide Certificate Application</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="docContext">Describe Situation & Details</label>
+                                            <textarea id="docContext" rows="4" placeholder="Explain your situation: e.g., 'Need 2 days leave for severe viral fever on 25-26 Nov with doctor note' or 'Attending Smart India Hackathon grand finale in Bangalore'" required></textarea>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="docTone">Tone</label>
+                                                <select id="docTone">
+                                                    <option value="Formal & Respectful" selected>Formal & Respectful</option>
+                                                    <option value="Polite & Urgent">Polite & Urgent</option>
+                                                    <option value="Professional Academic">Professional Academic</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="docLength">Length</label>
+                                                <select id="docLength">
+                                                    <option value="Concise">Concise (Single Page)</option>
+                                                    <option value="Standard" selected>Standard (Detailed)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button type="submit" id="generateDocBtn" class="primary-btn">
+                                                <span>✨ Generate Draft</span>
+                                            </button>
+                                            <button type="button" class="secondary-btn" onclick="clearDrafterForm()">
+                                                <span>Clear</span>
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Output Preview Pane -->
+                                    <div class="drafter-preview">
+                                        <div class="preview-header">
+                                            <span>Generated Document Preview</span>
+                                            <div class="preview-actions" id="previewActions" style="display: none;">
+                                                <button class="preview-btn" onclick="copyDocumentToClipboard()">📋 Copy</button>
+                                                <button class="preview-btn" onclick="downloadDocumentTxt()">💾 TXT</button>
+                                                <button class="preview-btn" onclick="downloadDocumentPdf()">📄 PDF</button>
+                                            </div>
+                                        </div>
+                                        <div class="preview-content" id="documentOutputBox">
+                                            <div class="placeholder-prompt">
+                                                <span>📝</span>
+                                                <p>Fill out the form on the left and click <strong>Generate Draft</strong> to create formal academic correspondence.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================================================== -->
+                        <!-- TAB 7: ADMIN MANAGEMENT PORTAL                     -->
+                        <!-- ================================================== -->
+                        <div class="tab-pane" id="pane-management">
+                            <div class="module-card">
+                                <div class="module-header">
+                                    <div>
+                                        <h2 class="module-title">⚙️ Campus Data Management Portal</h2>
+                                        <p class="module-subtitle">Authorized administrators can publish official courses and post urgent examination circulars.</p>
+                                    </div>
+                                </div>
+
+                                <div class="admin-grid">
+                                    <!-- Add Course Form -->
+                                    <div class="admin-card">
+                                        <h3 class="admin-card-title">📖 Add New Academic Course</h3>
+                                        <form id="adminCourseForm" onsubmit="handleAdminAddCourse(event)">
+                                            <div class="form-group">
+                                                <label>Course Code</label>
+                                                <input type="text" id="adminCourseCode" placeholder="CS602" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Course Title</label>
+                                                <input type="text" id="adminCourseTitle" placeholder="Cloud Computing & DevOps" required>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Credits</label>
+                                                    <input type="number" id="adminCourseCredits" value="4" min="1" max="6" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Semester</label>
+                                                    <input type="number" id="adminCourseSem" value="6" min="1" max="8" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Prerequisites (Comma separated codes)</label>
+                                                <input type="text" id="adminCoursePrereqs" placeholder="CS201, CS402">
+                                            </div>
+                                            <button type="submit" class="primary-btn">➕ Publish Course</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Add Exam Notice Form -->
+                                    <div class="admin-card">
+                                        <h3 class="admin-card-title">📢 Post Official Exam Circular</h3>
+                                        <form id="adminExamForm" onsubmit="handleAdminAddExam(event)">
+                                            <div class="form-group">
+                                                <label>Notice Code</label>
+                                                <input type="text" id="adminExamCode" placeholder="EXAM-2026-N04" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Notice Title</label>
+                                                <input type="text" id="adminExamTitle" placeholder="Revised Lab Practical Schedule" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Target Audience</label>
+                                                <input type="text" id="adminExamAudience" placeholder="All B.Tech CSE & ECE Students" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Calculator & Hall Ticket Instructions</label>
+                                                <textarea id="adminExamInstructions" rows="3" placeholder="Non-programmable scientific calculators only. Hall ticket printout mandatory." required></textarea>
+                                            </div>
+                                            <button type="submit" class="primary-btn">📢 Post Circular</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Upload & Publish Course Note Form -->
+                                    <div class="admin-card admin-card-wide" style="grid-column: 1 / -1;">
+                                        <h3 class="admin-card-title">📝 Upload & Publish Course Notes & Study Material (Generates Official PDF)</h3>
+                                        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+                                            Published notes are instantly made accessible to all enrolled students with automated ReportLab PDF generation.
+                                        </p>
+                                        <form id="adminNoteForm" onsubmit="handleAdminAddNote(event)">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Target Course</label>
+                                                    <select id="adminNoteCourseSelect" required>
+                                                        <option value="">Select Course...</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Unit / Module Number</label>
+                                                    <input type="number" id="adminNoteUnitNumber" value="1" min="1" max="10" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Unit / Module Title</label>
+                                                    <input type="text" id="adminNoteUnitTitle" placeholder="e.g. Dynamic Programming & Greedy Strategies" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Note Title / Document Headline</label>
+                                                    <input type="text" id="adminNoteTitle" placeholder="e.g. Unit 2 Lecture Notes & Solved Problems" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Faculty In-Charge / Author</label>
+                                                    <input type="text" id="adminNoteFaculty" placeholder="e.g. Dr. Sharma" value="Dr. Sharma" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Syllabus Topics Covered (Comma-separated)</label>
+                                                    <input type="text" id="adminNoteTopicDesc" placeholder="e.g. 0/1 Knapsack, LCS, Matrix Chain Multiplication, Huffman Coding">
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Comprehensive Lecture Notes Content (Markdown & Formulas Supported)</label>
+                                                <textarea id="adminNoteContent" rows="7" placeholder="# Unit 2: Lecture Notes&#10;&#10;## 1. Core Principles&#10;Dynamic Programming solves complex problems by breaking them down into simpler subproblems...&#10;- Optimal Substructure&#10;- Overlapping Subproblems" required></textarea>
+                                            </div>
+
+                                            <button type="submit" class="primary-btn" id="adminNoteSubmitBtn">
+                                                <span>➕ Publish Course Note & PDF</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- ========================================================== -->
+                <!-- RIGHT SIDEBAR (Widgets & Schedule)                         -->
+                <!-- ========================================================== -->
+                <aside class="right-widgets" id="rightWidgets">
+                    <!-- AI Connection Status Pill -->
+                    <div class="live-ai-badge" id="aiStatusBadge">
+                        <span class="pulsing-dot"></span>
+                        <span id="aiStatusText">Live Gemini AI Active</span>
+                    </div>
+
+                    <!-- WIDGET 1: Today's Timetable -->
+                    <div class="widget-card timetable-widget">
+                        <div class="widget-header">
+                            <div class="widget-title-wrap">
+                                <span class="widget-icon">📅</span>
+                                <h4 class="widget-title">Today's Timetable</h4>
+                            </div>
+                            <span class="widget-date-chip" id="currentDateChip">Tue, 24 Nov 2026</span>
+                        </div>
+                        <div class="schedule-timeline" id="todayScheduleWidget">
+                            <div class="schedule-item">
+                                <div class="timeline-indicator bar-blue"></div>
+                                <div class="schedule-details">
+                                    <div class="schedule-time">09:00 - 10:00</div>
+                                    <div class="schedule-course">Machine Learning</div>
+                                </div>
+                                <span class="room-tag">B-204</span>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="timeline-indicator bar-blue"></div>
+                                <div class="schedule-details">
+                                    <div class="schedule-time">10:15 - 11:15</div>
+                                    <div class="schedule-course">Software Engineering</div>
+                                </div>
+                                <span class="room-tag">B-204</span>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="timeline-indicator bar-green"></div>
+                                <div class="schedule-details">
+                                    <div class="schedule-time">11:30 - 12:30</div>
+                                    <div class="schedule-course">Agentic AI (Lab)</div>
+                                </div>
+                                <span class="room-tag lab-tag">AI Lab</span>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="timeline-indicator bar-teal"></div>
+                                <div class="schedule-details">
+                                    <div class="schedule-time">02:00 - 04:00</div>
+                                    <div class="schedule-course">DevOps Lab</div>
+                                </div>
+                                <span class="room-tag lab-tag">Lab-2</span>
+                            </div>
+                        </div>
+                        <a href="javascript:void(0)" class="widget-footer-link" onclick="switchMainTab('timetables')">
+                            <span>View Full Timetable</span>
+                            <span class="link-arrow">→</span>
+                        </a>
+                    </div>
+
+                    <!-- WIDGET 2: Upcoming Events -->
+                    <div class="widget-card events-widget">
+                        <div class="widget-header">
+                            <div class="widget-title-wrap">
+                                <span class="widget-icon">📅</span>
+                                <h4 class="widget-title">Upcoming Events</h4>
+                            </div>
+                            <a href="javascript:void(0)" class="widget-header-link" onclick="switchMainTab('exams')">View All</a>
+                        </div>
+                        <div class="events-list">
+                            <div class="event-item" onclick="switchMainTab('exams')">
+                                <div class="event-date-box date-purple">
+                                    <span class="month">NOV</span>
+                                    <span class="day">28</span>
+                                </div>
+                                <div class="event-info">
+                                    <strong class="event-title">Mid-Sem Exam (AI501)</strong>
+                                    <span class="event-meta text-warning">2 days left</span>
+                                </div>
+                                <span class="event-arrow">›</span>
+                            </div>
+
+                            <div class="event-item" onclick="quickNotify('Project Phase 2 Review: Architecture and Database demo.')">
+                                <div class="event-date-box date-teal">
+                                    <span class="month">DEC</span>
+                                    <span class="day">05</span>
+                                </div>
+                                <div class="event-info">
+                                    <strong class="event-title">Project Phase 2 Review</strong>
+                                    <span class="event-meta">9 days left</span>
+                                </div>
+                                <span class="event-arrow">›</span>
+                            </div>
+
+                            <div class="event-item" onclick="quickNotify('Hackathon - INCEPTION 2026: Campus AI & Web3 Tracks')">
+                                <div class="event-date-box date-amber">
+                                    <span class="month">DEC</span>
+                                    <span class="day">12</span>
+                                </div>
+                                <div class="event-info">
+                                    <strong class="event-title">Hackathon — INCEPTION 2026</strong>
+                                    <span class="event-meta">16 days left</span>
+                                </div>
+                                <span class="event-arrow">›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET 3: Key Deadlines -->
+                    <div class="widget-card deadlines-widget">
+                        <div class="widget-header">
+                            <div class="widget-title-wrap">
+                                <span class="widget-icon">🕒</span>
+                                <h4 class="widget-title">Key Deadlines</h4>
+                            </div>
+                            <a href="javascript:void(0)" class="widget-header-link" onclick="quickNotify('All 3 upcoming academic deadlines are on track.')">View All</a>
+                        </div>
+                        <div class="deadlines-list">
+                            <label class="deadline-item">
+                                <input type="checkbox" onchange="toggleTaskDone(this)">
+                                <span class="deadline-label">Fee Payment (Even Sem)</span>
+                                <span class="deadline-tag tag-urgent">Due in 3 days</span>
+                            </label>
+                            <label class="deadline-item">
+                                <input type="checkbox" onchange="toggleTaskDone(this)">
+                                <span class="deadline-label">Project Report Submission</span>
+                                <span class="deadline-tag tag-warning">Due in 7 days</span>
+                            </label>
+                            <label class="deadline-item">
+                                <input type="checkbox" onchange="toggleTaskDone(this)">
+                                <span class="deadline-label">Internship Evaluation</span>
+                                <span class="deadline-tag tag-normal">Due in 12 days</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET 4: Academic Progress -->
+                    <div class="widget-card progress-widget">
+                        <div class="widget-header">
+                            <div class="widget-title-wrap">
+                                <span class="widget-icon">📊</span>
+                                <h4 class="widget-title">Academic Progress</h4>
+                            </div>
+                            <span class="cgpa-pill">CGPA: <strong id="widgetCgpa">8.0</strong></span>
+                        </div>
+                        <div class="progress-info-row">
+                            <span class="semester-tag" id="widgetSemester">Sem 5 (CSE - AI)</span>
+                            <span class="progress-percent">80%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
-
-        <div class="error-message" id="errorMessage" style="display: none;"></div>
     </div>
+
+    <!-- ============================================================== -->
+    <!-- AUTH MODAL: STUDENT & ADMIN LOGIN / SIGNUP                     -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="authModal" style="display: none;">
+        <div class="modal-dialog auth-dialog">
+            <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
+            <div class="auth-header">
+                <div class="brand-logo-circle modal-logo">
+                    <span class="brand-icon">🎓</span>
+                </div>
+                <h3>Campus AI Assistant</h3>
+                <p>Welcome! Access your personalized academic workspace</p>
+            </div>
+
+            <!-- Auth Mode Switcher (Sign In vs Sign Up) -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabSignInBtn" onclick="switchAuthMode('signin')">
+                    🔑 Sign In
+                </button>
+                <button class="auth-tab-btn" id="tabSignUpBtn" onclick="switchAuthMode('signup')">
+                    ✨ Sign Up (Register)
+                </button>
+            </div>
+
+            <!-- Role Selector Pill -->
+            <div class="auth-role-selector">
+                <span class="role-selector-label">I am logging in as:</span>
+                <div class="role-btn-group">
+                    <button type="button" class="role-pill active" id="roleBtnStudent" onclick="selectAuthRole('student')">
+                        👨‍🎓 Student
+                    </button>
+                    <button type="button" class="role-pill" id="roleBtnAdmin" onclick="selectAuthRole('admin')">
+                        🛡️ Administrator
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIGN IN FORM -->
+            <form class="auth-form" id="signInForm" onsubmit="handleSignInSubmit(event)">
+                <div class="form-group">
+                    <label for="loginUsername" id="loginUsernameLabel">Student Roll No. or Campus Email</label>
+                    <input type="text" id="loginUsername" placeholder="e.g. 22AI104 or surya@campus.edu" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+
+                <div class="form-remember-row">
+                    <label class="remember-label">
+                        <input type="checkbox" id="rememberMeCheckbox" checked>
+                        <span>Remember this device</span>
+                    </label>
+                    <a href="javascript:void(0)" onclick="quickNotify('Password recovery request sent to administrator.')" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="signInSubmitBtn" class="primary-btn auth-submit-btn">
+                    <span>Sign In 🚀</span>
+                </button>
+
+                <!-- Quick One-Click Demo Credentials -->
+                <div class="demo-logins-box">
+                    <span class="demo-box-label">Quick Demo Access:</span>
+                    <div class="demo-chips-row">
+                        <button type="button" class="demo-chip" onclick="fillDemoCredentials('surya', 'surya123', 'student')">
+                            👤 Student (Surya D.)
+                        </button>
+                        <button type="button" class="demo-chip" onclick="fillDemoCredentials('admin', 'admin123', 'admin')">
+                            🛡️ Admin (Registrar)
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- SIGN UP FORM -->
+            <form class="auth-form" id="signUpForm" style="display: none;" onsubmit="handleSignUpSubmit(event)">
+                <!-- Admin-Only Notice & Field (Displayed ONLY when Administrator role is chosen) -->
+                <div id="adminSignupNotice" style="display: none; padding: 10px 14px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; font-size: 12.5px; color: #4338ca; margin-bottom: 12px;">
+                    🛡️ <strong>Administrator Registration:</strong> Simply provide your official institutional Admin Email ID and a secure password.
+                </div>
+                
+                <div class="form-group" id="adminEmailFieldGroup" style="display: none;">
+                    <label for="regAdminEmail">Admin Email ID</label>
+                    <input type="email" id="regAdminEmail" placeholder="admin@campus.edu" autocomplete="email">
+                </div>
+
+                <!-- Student-Only Fields (Full Name, Roll No, Dept, Semester, CGPA, Resume, Skills) -->
+                <div id="studentSignupFields">
+                    <div class="form-group">
+                        <label for="regFullName">Full Name</label>
+                        <input type="text" id="regFullName" placeholder="e.g. Surya D.">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regUsername">Roll Number / Student ID</label>
+                            <input type="text" id="regUsername" placeholder="e.g. 22AI104 or 22CS104">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Campus Email</label>
+                            <input type="email" id="regEmail" placeholder="surya@campus.edu">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regDept">Department</label>
+                            <select id="regDept">
+                                <option value="CSE (AI)">Computer Science & AI (CSE-AI)</option>
+                                <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                <option value="ECE">Electronics & Communication (ECE)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regSemester">Semester</label>
+                            <select id="regSemester">
+                                <option value="Sem 5 (CSE - AI)">Semester 5</option>
+                                <option value="Sem 4">Semester 4</option>
+                                <option value="Sem 6">Semester 6</option>
+                                <option value="Sem 1">Semester 1</option>
+                                <option value="Sem 2">Semester 2</option>
+                                <option value="Sem 3">Semester 3</option>
+                                <option value="Sem 7">Semester 7</option>
+                                <option value="Sem 8">Semester 8</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CGPA & Resume Link for Student Profile -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regCgpa">Current CGPA</label>
+                            <input type="number" id="regCgpa" step="0.01" min="0" max="10" placeholder="e.g. 8.0" value="8.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="regResume">Resume Link / Portfolio URL</label>
+                            <input type="url" id="regResume" placeholder="https://drive.google.com/file/...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regSkills">Technical Skills & Competencies</label>
+                        <input type="text" id="regSkills" placeholder="e.g. Python, Machine Learning, FastAPI, PostgreSQL">
+                    </div>
+                </div>
+
+                <!-- Password and Confirmation (Required for both roles) -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" placeholder="Minimum 6 characters" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Re-enter password" required minlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" id="signUpSubmitBtn" class="primary-btn auth-submit-btn">
+                    <span>Create Account & Log In ✨</span>
+                </button>
+            </form>
+
+            <div class="auth-message-box" id="authMessageBox" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- PREREQUISITE GRAPH MODAL                                       -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="prereqModal" style="display: none;">
+        <div class="modal-dialog">
+            <button class="modal-close-btn" onclick="closePrereqModal()">✕</button>
+            <div class="modal-header">
+                <span class="modal-icon">🕸️</span>
+                <div>
+                    <h3 id="modalCourseTitle">Course Dependency Graph</h3>
+                    <p id="modalCourseCode">CS401 • 4 Credits</p>
+                </div>
+            </div>
+            <div class="modal-body" id="modalPrereqContent">
+                <!-- Dynamic Prerequisite Tree -->
+            </div>
+            <div class="modal-footer">
+                <button class="primary-btn-sm" onclick="closePrereqModal()">Close Graph</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- NOTE PREVIEW MODAL (READER & DIRECT DOWNLOAD)                  -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="notePreviewModal" style="display: none;">
+        <div class="modal-dialog note-modal-dialog">
+            <button class="modal-close-btn" onclick="closeNotePreviewModal()">✕</button>
+            <div class="modal-header">
+                <span class="modal-icon">📖</span>
+                <div>
+                    <h3 id="modalNoteTitle">Dynamic Programming & Greedy Strategies</h3>
+                    <p id="modalNoteMeta">CS401 • Unit 2 • Dr. Sharma • Academic Session 2025-2026</p>
+                </div>
+            </div>
+            <div class="modal-body note-modal-body">
+                <div class="note-topic-callout" id="modalNoteTopicBox"></div>
+                <div class="note-markdown-reader" id="modalNoteContent"></div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; color: #64748b;" id="modalNoteDownloads">📥 78 Downloads</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="secondary-btn-sm" onclick="closeNotePreviewModal()">Close</button>
+                    <button class="primary-btn-sm" id="modalDownloadPdfBtn" onclick="triggerNoteDownloadFromModal()">📥 Download Official PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- STUDENT PROFILE & RESUME MANAGEMENT MODAL                       -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="studentProfileModal" style="display: none;">
+        <div class="modal-dialog profile-modal-dialog">
+            <button class="modal-close-btn" onclick="closeStudentProfileModal()">✕</button>
+            <div class="profile-modal-header">
+                <div class="profile-avatar-large">
+                    <img src="assets/avatar.png" id="profileModalAvatar" alt="Avatar" class="avatar-round" onerror="this.src='assets/student-avatar.jpg'">
+                </div>
+                <div class="profile-header-meta">
+                    <h3 id="profileModalName">Surya D.</h3>
+                    <div class="profile-meta-chips">
+                        <span class="profile-chip badge-primary" id="profileModalRoll">Roll: 22AI104</span>
+                        <span class="profile-chip badge-secondary" id="profileModalDept">CSE (AI) • Sem 5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-modal-body">
+                <!-- VIEW MODE -->
+                <div id="profileViewSection">
+                    <!-- Academic Highlights: CGPA & Resume -->
+                    <div class="profile-highlight-grid">
+                        <div class="profile-metric-box cgpa-box">
+                            <span class="metric-mini-label">CUMULATIVE GPA</span>
+                            <div class="metric-score-row">
+                                <span class="metric-big-num" id="profileViewCgpa">8.0</span>
+                                <span class="metric-scale">/ 10.0</span>
+                            </div>
+                            <span class="metric-status-badge">⭐ Distinction Standing</span>
+                        </div>
+
+                        <div class="profile-metric-box resume-box">
+                            <span class="metric-mini-label">ACADEMIC RESUME / CV</span>
+                            <p class="resume-meta-text" id="profileResumeStatusText">Institutional Verified Resume</p>
+                            <a href="#" id="profileResumeLinkBtn" target="_blank" class="profile-resume-btn">
+                                <span>📄 View / Download Resume</span>
+                                <span class="ext-arrow">↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Skills & Core Competencies -->
+                    <div class="profile-section-block">
+                        <h4 class="profile-section-title">🛠️ Technical Skills & Competencies</h4>
+                        <div class="skills-tags-cloud" id="profileSkillsCloud">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Machine Learning</span>
+                            <span class="skill-tag">FastAPI</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">React</span>
+                        </div>
+                    </div>
+
+                    <!-- Academic Details Grid -->
+                    <div class="profile-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Campus Email</span>
+                            <span class="detail-value" id="profileViewEmail">surya@campus.edu</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Department</span>
+                            <span class="detail-value" id="profileViewDept">Computer Science & AI</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Current Semester</span>
+                            <span class="detail-value" id="profileViewSem">Semester 5 (CSE - AI)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Contact Phone</span>
+                            <span class="detail-value" id="profileViewPhone">+91 98765 43210</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions-row">
+                        <button class="secondary-btn" onclick="toggleEditProfileMode(true)">
+                            <span>✏️ Edit Profile Details</span>
+                        </button>
+                        <button class="primary-btn-sm" onclick="closeStudentProfileModal()">
+                            <span>Done</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- EDIT MODE -->
+                <form id="profileEditSection" style="display: none;" onsubmit="handleSaveProfile(event)">
+                    <h4 class="profile-section-title">✏️ Edit Profile Credentials & Resume</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editProfileName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Roll Number / Student ID</label>
+                            <input type="text" id="editProfileRoll" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>CGPA (Scale 0.00 - 10.00)</label>
+                            <input type="number" id="editProfileCgpa" step="0.01" min="0" max="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone</label>
+                            <input type="text" id="editProfilePhone" placeholder="+91 98765 43210">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Resume Link / Portfolio URL</label>
+                        <input type="url" id="editProfileResume" placeholder="https://drive.google.com/file/d/.../view">
+                        <small style="font-size: 11px; color: #64748b;">Link to your PDF resume (Google Drive, GitHub, or institutional cloud).</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Technical Skills (Comma-separated)</label>
+                        <input type="text" id="editProfileSkills" placeholder="Python, Machine Learning, FastAPI, React, SQL">
+                    </div>
+                    <div class="profile-actions-row">
+                        <button type="button" class="secondary-btn" onclick="toggleEditProfileMode(false)">
+                            Cancel
+                        </button>
+                        <button type="submit" id="saveProfileBtn" class="primary-btn">
+                            <span>💾 Save Profile Changes</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div class="toast-notification" id="toastNotification"></div>
 
     <script src="script.js"></script>
 </body>
